@@ -25,7 +25,7 @@ pub extern "C" fn timer_task() {
                 if timer.active
                     && crate::timer::time_diff(timer.started, current_timestamp) >= timer.timeout
                 {
-                    debug!("timer is due.... {:x}", timer.id());
+                    trace!("timer is due.... {:x}", timer.id());
 
                     if to_run.enqueue(timer.callback).is_err() {
                         break;

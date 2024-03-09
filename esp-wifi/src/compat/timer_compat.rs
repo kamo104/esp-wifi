@@ -53,7 +53,7 @@ pub fn compat_timer_arm_us(ets_timer: *mut ets_timer, us: u32, repeat: bool) {
     let systick = crate::timer::get_systimer_count();
     let ticks = crate::timer::micros_to_ticks(us as u64);
 
-    debug!(
+    trace!(
         "timer_arm_us {:x} current: {} ticks: {} repeat: {}",
         ets_timer as usize, systick, ticks, repeat
     );
@@ -65,7 +65,7 @@ pub fn compat_timer_arm_us(ets_timer: *mut ets_timer, us: u32, repeat: bool) {
             timer.active = true;
             timer.periodic = repeat;
         } else {
-            debug!("timer_arm_us {:x} not found", ets_timer as usize);
+            trace!("timer_arm_us {:x} not found", ets_timer as usize);
         }
     })
 }
@@ -73,10 +73,10 @@ pub fn compat_timer_arm_us(ets_timer: *mut ets_timer, us: u32, repeat: bool) {
 pub fn compat_timer_disarm(ets_timer: *mut ets_timer) {
     critical_section::with(|_| unsafe {
         if let Some(timer) = TIMERS.iter_mut().find(|t| t.ets_timer == ets_timer) {
-            debug!("timer_disarm {:x}", timer.id());
+            trace!("timer_disarm {:x}", timer.id());
             timer.active = false;
         } else {
-            debug!("timer_disarm {:x} not found", ets_timer as usize);
+            trace!("timer_disarm {:x} not found", ets_timer as usize);
         }
     })
 }
@@ -84,13 +84,13 @@ pub fn compat_timer_disarm(ets_timer: *mut ets_timer) {
 pub fn compat_timer_done(ets_timer: *mut ets_timer) {
     critical_section::with(|_| unsafe {
         if let Some(timer) = TIMERS.iter_mut().find(|t| t.ets_timer == ets_timer) {
-            debug!("timer_done {:x}", timer.id());
+            trace!("timer_done {:x}", timer.id());
             timer.active = false;
 
             (*ets_timer).priv_ = core::ptr::null_mut();
             (*ets_timer).expire = 0;
         } else {
-            debug!("timer_done {:x} not found", ets_timer as usize);
+            trace!("timer_done {:x} not found", ets_timer as usize);
         }
     })
 }
@@ -100,7 +100,7 @@ pub fn compat_timer_setfn(
     pfunction: unsafe extern "C" fn(*mut c_types::c_void),
     parg: *mut c_types::c_void,
 ) {
-    debug!(
+    trace!(
         "timer_setfn {:x} {:?} {:?}",
         ets_timer as usize, pfunction, parg
     );
